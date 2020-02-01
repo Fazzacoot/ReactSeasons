@@ -1,32 +1,39 @@
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import SeasonDisplay from "./SeasonDisplay";
+import Preloader from "./Preloader";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
+  /**
+   * both defining a constructor or
+   * using state as a variable work the same way
+   */
+  // constructor(props) {
+  //   super(props);
+  //   this.state = { lat: null, errorMessage: "" };
+  // }
+  state = { lat: null, errorMessage: "" };
 
-    this.state = { lat: null, errorMessage: "" };
-
+  componentDidMount() {
     window.navigator.geolocation.getCurrentPosition(
-      position => {
-        this.setState({ lat: position.coords.latitude });
-      },
-      err => {
-        this.setState({ errorMessage: err.message });
-      }
+      position => this.setState({ lat: position.coords.latitude }),
+      err => this.setState({ errorMessage: err.message })
     );
   }
 
-  render() {
+  renderContent() {
     if (this.state.errorMessage && !this.state.lat) {
       return <div> Error: {this.state.errorMessage}</div>;
     }
 
     if (!this.state.errorMessage && this.state.lat) {
-      return <div> Latitude: {this.state.lat} </div>;
+      return <SeasonDisplay lat={this.state.lat} />;
     }
 
-    return <div>Loading...</div>;
+    return <Preloader message="Please allow loaction access" />;
+  }
+  render() {
+    return <div className="border red">{this.renderContent()}</div>;
   }
 }
 
